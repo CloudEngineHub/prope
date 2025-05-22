@@ -248,12 +248,6 @@
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
-          <!-- <center>
-            <video width="75%" autoplay muted playsinline>
-              <source src="assets/.mp4" type="video/mp4" />
-            </video>
-            <img src="assets/placeholder_camera_as_pos.png" alt="teaser" style="width: 100%;">
-          </center> -->
           <table width="100%" class="results">
             <tr align="center">
               <td width="50%">
@@ -274,9 +268,6 @@
           </table>
         </div>
       </div>
-      <!-- <p style="color: red;">
-        TODO: replace this placeholder image with a video.
-      </p> -->
     </div>
 
     <div class="my-5">
@@ -341,32 +332,33 @@
 
 
     <div class="row my-5">
-      <h3 class="mt-4 mb-3">Results: Adding PRoPE to LVSM For Novel View Synthesis</h3>
+      <h3 class="mt-4 mb-3">Plug-and-Play: Improved Novel View Synthesis</h3>
       <p>
         We inject PRoPE into the existing LVSM framework and evaluate its performance on the
         task of novel view synthesis.
       </p>
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-item nav-link" id="tab-tele-tnerf" data-bs-toggle="tab" data-bs-target="#video-tele-tnerf"
-            role="tab" type="button" aria-controls="tab-tele-tnerf" aria-selected="false">
+          <button class="nav-item nav-link" id="tab-tele-lvsm-train" data-bs-toggle="tab"
+            data-bs-target="#video-tele-lvsm-train" role="tab" type="button" aria-controls="tab-tele-lvsm-train"
+            aria-selected="true">
             Training Curves
           </button>
-          <button class="nav-item nav-link active" id="tab-tele-nerfies" data-bs-toggle="tab"
-            data-bs-target="#video-tele-nerfies" role="tab" type="button" aria-controls="tab-tele-nerfies"
-            aria-selected="true">
+          <button class="nav-item nav-link active" id="tab-tele-lvsm-eval" data-bs-toggle="tab"
+            data-bs-target="#video-tele-lvsm-eval" role="tab" type="button" aria-controls="tab-tele-lvsm-eval"
+            aria-selected="false">
             Evaluation Curves
           </button>
-          <button class="nav-item nav-link" id="tab-tele-hypernerf" data-bs-toggle="tab"
-            data-bs-target="#video-tele-hypernerf" role="tab" type="button" aria-controls="tab-tele-hypernerf"
+          <button class="nav-item nav-link" id="tab-tele-lvsm-visual" data-bs-toggle="tab"
+            data-bs-target="#video-tele-lvsm-visual" role="tab" type="button" aria-controls="tab-tele-lvsm-visual"
             aria-selected="false">
             Visual Comparison
           </button>
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade text-center" id="video-tele-tnerf" role="tabpanel" aria-labelledby="tab-tele-tnerf"
-          style="background-color: white">
+        <div class="tab-pane fade text-center" id="video-tele-lvsm-train" role="tabpanel"
+          aria-labelledby="tab-tele-lvsm-train" style="background-color: white">
           <table width="100%" class="results">
             <tr align="center">
               <video width="100%" autoplay loop muted controls>
@@ -375,8 +367,8 @@
             </tr>
           </table>
         </div>
-        <div class="tab-pane fade show active text-center" id="video-tele-nerfies" role="tabpanel"
-          aria-labelledby="tab-tele-nerfies" style="background-color: white">
+        <div class="tab-pane fade show active text-center" id="video-tele-lvsm-eval" role="tabpanel"
+          aria-labelledby="tab-tele-lvsm-eval" style="background-color: white">
           <table width="100%" class="results">
             <tr align="center">
               <video width="100%" autoplay loop muted controls>
@@ -385,8 +377,8 @@
             </tr>
           </table>
         </div>
-        <div class="tab-pane fade text-center" id="video-tele-hypernerf" role="tabpanel"
-          aria-labelledby="tab-tele-hypernerf" style="background-color: white">
+        <div class="tab-pane fade text-center" id="video-tele-lvsm-visual" role="tabpanel"
+          aria-labelledby="tab-tele-lvsm-visual" style="background-color: white">
           <table width="100%" class="results">
             <tr align="center">
               <td width="50%">
@@ -413,9 +405,101 @@
       </div>
     </div>
 
-    <p style="color: red;">
+
+    <div class="row my-5">
+      <h3 class="mt-4 mb-3">Plug-and-Play: Improved Stereo Depth Estimation</h3>
+      <p>
+        We inject PRoPE into the official UniMatch codebase and evaluate its performance on the
+        task of stereo depth estimation.
+      </p>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-item nav-link" id="tab-tele-unimatch-train" data-bs-toggle="tab"
+            data-bs-target="#video-tele-unimatch-train" role="tab" type="button" aria-controls="tab-tele-unimatch-train"
+            aria-selected="true">
+            Training Curves
+          </button>
+          <button class="nav-item nav-link active" id="tab-tele-unimatch-eval" data-bs-toggle="tab"
+            data-bs-target="#video-tele-unimatch-eval" role="tab" type="button" aria-controls="tab-tele-unimatch-eval"
+            aria-selected="false">
+            Evaluation Curves
+          </button>
+          <button class="nav-item nav-link" id="tab-tele-unimatch-visual" data-bs-toggle="tab"
+            data-bs-target="#video-tele-unimatch-visual" role="tab" type="button"
+            aria-controls="tab-tele-unimatch-visual" aria-selected="false">
+            Visual Comparison
+          </button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade text-center" id="video-tele-unimatch-train" role="tabpanel"
+          aria-labelledby="tab-tele-unimatch-train" style="background-color: white">
+          <table width="100%" class="results">
+            <tr align="center">
+              <video width="100%" autoplay loop muted controls>
+                <source src="./assets/lvsm_prope_training_curve.mp4" type="video/mp4" />
+              </video>
+            </tr>
+          </table>
+        </div>
+        <div class="tab-pane fade show active text-center" id="video-tele-unimatch-eval" role="tabpanel"
+          aria-labelledby="tab-tele-unimatch-eval" style="background-color: white">
+          <table width="100%" class="results">
+            <tr align="center">
+              <video width="100%" autoplay loop muted controls>
+                <source src="./assets/placeholder_curves.mp4" type="video/mp4" />
+              </video>
+            </tr>
+          </table>
+        </div>
+        <div class="tab-pane fade text-center" id="video-tele-unimatch-visual" role="tabpanel"
+          aria-labelledby="tab-tele-unimatch-visual" style="background-color: white">
+          <table width="100%" class="results">
+            <tr align="center">
+              <td width="50%">
+                <img src="assets/visuals/unimatch.png" alt="unimatch" style="width: 100%;">
+              </td>
+              <td width="50%">
+                <img src="assets/visuals/unimatch-prope.png" alt="unimatch-prope" style="width: 100%;">
+              </td>
+            </tr>
+            <tr align="center">
+              <td>UniMatch</td>
+              <td>UniMatch + PRoPE</td>
+            </tr>
+          </table>
+        </div>
+        <p style="color: red;">
+          TODO: curves are placeholder
+        </p>
+
+      </div>
+    </div>
+
+
+    <div class="my-5">
+      <h3 class="mt-4 mb-3">Better Robostness than Alternative Camera Conditioning Methods</h3>
+      <p>
+        Our method demonstrates superior robustness on handling out-of-distribution context
+        length (number of views) and out-of-distribution intrinsic parameters (zoom-in) at test time,
+        benefiting from our <em>relative</em> geometric formula.
+      </p>
+      <div class="row">
+        <div class="col-md-12 mt-2">
+          <table width="100%" class="results">
+            <center>
+              <img src="assets/ood-combined.png" alt="ood-combined" style="width: 80%;">
+              <!-- <img src="assets/ood-focal.png" alt="ood-focal" style="width: 80%;"> -->
+            </center>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- <p style="color: red;">
       TODO: More results
-    </p>
+    </p> -->
 
     <!-- <div class="row my-5">
       <h2>Citation</h2>
