@@ -243,35 +243,50 @@
       <h3 class="mt-4 mb-3">Idea: Camera as Image's "Positional" Identifier</h3>
       <p>
         The camera, defined by its intrinsic and extrinsic parameters, uniquely determines
-        where and how the 2D observation is made within the 3D world. Thus camera
-        parameters effectively represents the image's "positional" information.
+        where and how the image observation was captured within the 3D world. Thus camera
+        parameters effectively represent the image's "positional" information.
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
-          <center>
-            <!-- <video width="75%" autoplay muted playsinline>
+          <!-- <center>
+            <video width="75%" autoplay muted playsinline>
               <source src="assets/.mp4" type="video/mp4" />
-            </video> -->
+            </video>
             <img src="assets/placeholder_camera_as_pos.png" alt="teaser" style="width: 100%;">
-          </center>
+          </center> -->
+          <table width="100%" class="results">
+            <tr align="center">
+              <td width="50%">
+                <video width="100%" autoplay loop muted controls>
+                  <source src="./assets/2d-obs-2-down2x.mp4" type="video/mp4" />
+                </video>
+              </td>
+              <td width="50%">
+                <video width="100%" autoplay loop muted controls>
+                  <source src="./assets/2d-obs-1-down2x.mp4" type="video/mp4" />
+                </video>
+              </td>
+            </tr>
+            <tr align="center">
+              <td>2D Observations</td>
+              <td>Camera: {intrinsic, extrinsic}</td>
+            </tr>
+          </table>
         </div>
       </div>
-      <p style="color: red;">
+      <!-- <p style="color: red;">
         TODO: replace this placeholder image with a video.
-      </p>
+      </p> -->
     </div>
 
     <div class="my-5">
       <h3 class="mt-4 mb-3">Positional Encoding for Multi-view Geometry</h3>
       <p>
-        Language-modeling and multi-view perception confront the
-        same core problem: learning relationships among discrete observations. In an LLM, each token's
-        position is its index in the sequence, and rotary positional encoding (RoPE) replaces absolute indices
-        with relative offsets so attention can focus on token-to-token distances. In multi-view geometry, an
-        observation's position is the camera that captured it—fully specified by its intrinsic and extrinsic
-        parameters. Thus we could make this direct substitution - treating token offsets as relative camera
-        transforms - laying the foundation for a geometry-aware attention mechanism that inherits RoPE's
-        proven advantages.
+        Geometric relationships are important for visual tokens in multiview transformers. This is similar to 1D
+        position in large language models,
+        where relative position encodings (RPEs) can capture token-to-token distances. The relationships that matter in
+        multiview geometry
+        are between cameras, which can be fully specified by intrinsic and extrinsic parameters:
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
