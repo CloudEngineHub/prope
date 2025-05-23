@@ -351,8 +351,9 @@
     <div class="my-5">
       <h3 class="mt-4 mb-3">Problem: Camera Conditioning in Multi-view Transformers</h3>
       <p>
-        As transformers become increasingly adopted for multi-view 3D perception tasks,a key challenge
-        lies in effectively conditioning these models on camera parameters that ground visual observations in 3D space.
+        As transformers become increasingly prevalent in multi-view 3D perception, a central
+        challenge is effectively incorporating the input camera parameters to ground
+        visual observations in 3D space.
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
@@ -441,7 +442,9 @@
 
       <p>
         It is also extremely easy to implement and can be plugged
-        into any existing attention-based framework with minimal changes.
+        into any existing attention-based framework with minimal changes: Just replace
+        the `F.scaled_dot_product_attention` with the code snippet below to inject
+        camera information.
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
