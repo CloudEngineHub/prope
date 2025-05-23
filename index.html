@@ -38,6 +38,132 @@
       font-family: "Lato", sans-serif;
     }
 
+    .terminal-container {
+      position: relative;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 #1a1a1a44, 0 1.5px 16px 0 #223c5b24;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1.6px solid rgba(222, 220, 245, 0.13);
+      width: 100%;
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 0 0 2.3rem 0;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      height: 44px;
+      border-radius: 18px 18px 0 0;
+      padding: 0.35em 1.1em;
+      background: rgba(80, 80, 80, 0.9);
+      border-bottom: 1.2px solid rgba(222, 220, 245, 0.11);
+      user-select: none;
+      font-family: inherit;
+      position: relative;
+      justify-content: center;
+      font-size: 1.2em;
+    }
+
+    .mac-controls {
+      display: flex;
+      gap: 0.7em;
+      margin-right: auto;
+      margin-left: 0;
+      margin-top: 2px;
+      z-index: 2;
+    }
+
+    .mac-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 2px #0002;
+      border: 1px solid #0002;
+    }
+
+    .mac-dot.red {
+      background: #ff5f56;
+    }
+
+    .mac-dot.yellow {
+      background: #ffbd2e;
+    }
+
+    .mac-dot.green {
+      background: #27c93f;
+    }
+
+    .terminal-content {
+      padding: 1.5rem 1.0rem 1.0rem 1.0rem;
+      border-radius: 0 0 18px 18px;
+      min-height: 3em;
+      box-sizing: border-box;
+      font-size: 0.8em;
+      color: #fff;
+      overflow: visible;
+    }
+
+    pre {
+      background: none !important;
+      box-shadow: none !important;
+      margin: 0;
+      padding: 0;
+      border: none;
+      width: 100%;
+      font-size: inherit;
+      overflow: visible;
+    }
+
+    code {
+      background: none !important;
+      box-shadow: none !important;
+      font-family: 'JetBrains Mono', 'Fira Mono', 'Menlo', monospace;
+      font-size: 0.65em;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      width: 100%;
+      display: block;
+      min-height: 3em;
+      box-sizing: border-box;
+      color: #FFFFFF !important;
+      text-align: left;
+      padding-left: 1rem;
+    }
+
+    /* Override highlight.js styles to use same font */
+    .hljs-comment,
+    .hljs-keyword,
+    .hljs-string,
+    .hljs-number,
+    .hljs-function,
+    .hljs-title,
+    .hljs-params,
+    .hljs-literal,
+    .hljs-operator,
+    .hljs-punctuation {
+      font-family: 'JetBrains Mono', 'Fira Mono', 'Menlo', monospace !important;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 1ch;
+      height: 1.1em;
+      vertical-align: text-bottom;
+      margin-left: 1px;
+      border-radius: 2px;
+      background: #fff7;
+      animation: blink 0.85s infinite steps(1);
+      box-shadow: 0 0 0.5px #fff8;
+    }
+
+    @keyframes blink {
+      50% {
+        background: transparent;
+      }
+    }
+
     table.results td {
       color: #888;
       font-size: 90%;
@@ -319,21 +445,22 @@
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
-          <section>
-
-          </section>
-
           <center>
-            <!-- <video width="75%" autoplay muted playsinline>
-              <source src="assets/ttt.mp4" type="video/mp4" />
-            </video> -->
-            <img src="assets/prope-code.png" alt="code" style="width: 100%;">
+            <div class="terminal-container">
+              <div class="terminal-header">
+                <span class="mac-controls">
+                  <span class="mac-dot red"></span>
+                  <span class="mac-dot yellow"></span>
+                  <span class="mac-dot green"></span>
+                </span>
+              </div>
+              <div class="terminal-content">
+                <pre><code id="typing-area" class="language-python"></code></pre>
+              </div>
+            </div>
           </center>
         </div>
       </div>
-      <p style="color: red;">
-        TODO: replace this placeholder image with a video.
-      </p>
     </div>
 
 
@@ -522,6 +649,60 @@
     </div>
      -->
   </div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script>
+    const code = `def prope_dot_product_attention(q, k, v, extrinsics, intrinsics, image_width, image_height):
+      # Compute projective matrix: K [R | t]
+      intrinsics = normalize_intrinsics(intrinsics, image_width, image_height)
+      P = lift_K(intrinsics) @ extrinsics 
+      
+      # Block-diagonal transforms to the inputs and outputs of the attention operator.
+      fn_q = [(partial(_apply_projmat, P.t()), D // 2), (partial(_apply_rope), D // 2)]
+      fn_kv = [(partial(_apply_projmat, P.inverse()), D // 2), (partial(_apply_rope), D // 2)]
+      fn_o = [(partial(_apply_projmat, P), D // 2), (partial(_apply_rope, inverse=True), D // 2)]
+      o = F.scaled_dot_product_attention(
+          query=_apply_block_diagonal(q, fn_q),
+          key=_apply_block_diagonal(k, fn_kv),
+          value=_apply_block_diagonal(v, fn_kv),
+      )
+      return _apply_block_diagonal(o, fn_o)`;
+
+    const typingArea = document.getElementById('typing-area');
+    const typeSpeed = 8; // Faster typing speed
+    let hasTyped = false; // Prevent multiple animations
+
+    async function typeText(target, text) {
+      if (hasTyped) return; // Don't type again if already done
+      hasTyped = true;
+
+      for (let i = 0; i <= text.length; ++i) {
+        const curr = text.slice(0, i);
+        target.innerHTML = hljs.highlight(curr, { language: 'python' }).value + '<span class="cursor"></span>';
+        await new Promise(r => setTimeout(r, typeSpeed));
+      }
+    }
+
+    // Use Intersection Observer to start typing when section comes into view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !hasTyped) {
+          typeText(typingArea, code);
+        }
+      });
+    }, {
+      threshold: 0.3 // Start when 30% of the element is visible
+    });
+
+    // Start observing when page loads
+    window.addEventListener('load', () => {
+      const terminalContainer = document.querySelector('.terminal-container');
+      if (terminalContainer) {
+        observer.observe(terminalContainer);
+      }
+    });
+  </script>
 </body>
 
 </html>
