@@ -243,8 +243,9 @@
       <h3 class="mt-4 mb-3">Idea: Camera as Image's "Positional" Identifier</h3>
       <p>
         The camera, defined by its intrinsic and extrinsic parameters, uniquely determines
-        where and how the image observation was captured within the 3D world. Thus camera
-        parameters effectively represent the image's "positional" information.
+        where and how the image observation was captured within the 3D world,
+        acting as the "positional" identifier that we aim to spatially encode into the
+        multi-view transformer.
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
@@ -478,8 +479,8 @@
       <h3 class="mt-4 mb-3">Better Robostness than Alternative Camera Conditioning Methods</h3>
       <p>
         Our method demonstrates superior robustness on handling out-of-distribution context
-        length (number of views) and out-of-distribution intrinsic parameters (zoom-in) at test time,
-        benefiting from our <em>relative</em> geometric formula.
+        length (more views) and out-of-distribution intrinsic parameters (zoom-in) at test time,
+        benefiting from our <em>relative</em> camera encoding formula.
       </p>
       <div class="row">
         <div class="col-md-12 mt-2">
