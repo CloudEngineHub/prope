@@ -281,7 +281,7 @@ class TrainDataset(Dataset):
         random_zoom: bool = False,  # only useful when zoom_factor is > 1.0
         input_views: int = 2,
         supervise_views: int = 6,
-        verbose: bool = True,
+        verbose: bool = False,
     ):
         super().__init__()
         # No list/dict in the dataset, which would cause "memory leak"
@@ -370,7 +370,7 @@ class EvalDataset(Dataset):
         folder: str,
         patch_size: int = 256,
         zoom_factor: float = 1.0,  # 1.0 means disabled
-        verbose: bool = True,
+        verbose: bool = False,
         first_n: Optional[int] = None,
         rank: Optional[int] = None,
         world_size: Optional[int] = None,
