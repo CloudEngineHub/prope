@@ -2,11 +2,9 @@ from collections import namedtuple
 from typing import Tuple
 
 import torch
-from torch import Tensor
 import torch.nn.functional as F
-
 from einops import rearrange
-
+from torch import Tensor
 
 Camera = namedtuple("Camera", ["K", "camtoworld", "width", "height"])
 
@@ -38,7 +36,6 @@ def random_SE3(batch_size: Tuple[int], device="cpu"):
     random_matrices[..., :3, :3] = random_SO3(batch_size, device)
     random_matrices[..., :3, 3] = torch.randn(*batch_size, 3, device=device)
     return random_matrices
-
 
 
 def patchify(x: Tensor, patch_size: int) -> Tensor:
@@ -88,7 +85,6 @@ def unpatchify(x: Tensor, height: int, width: int, patch_size: int) -> Tensor:
         pw=patch_size,
     )
     return x
-
 
 
 def camera_to_raymap(
