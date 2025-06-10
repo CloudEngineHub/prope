@@ -163,27 +163,29 @@ class LVSMDecoderOnlyModel(nn.Module):
         tar_cams: Camera,
     ) -> Tensor:
         # ref_imgs: [B, V1, H, W, C]
-        # ref_rays: [B, V1, H, W, C]
         # tar_imgs: [B, V2, H, W, C]
-        # tar_rays: [B, V2, H, W, C]
-        batch_size, v1 = ref_cams.camtoworld.shape[:2]
         batch_size, v2 = tar_cams.camtoworld.shape[:2]
         config = self.config
 
-        ref_rays = self.create_rays(ref_cams)  # [B, V1, H, W, C]
-        tar_rays = self.create_rays(tar_cams)  # [B, V2, H, W, C]
+        # Create rays.
+        # ref_rays: [B, V1, H, W, C]
+        # tar_rays: [B, V2, H, W, C]
+        ref_rays = self.create_rays(ref_cams)
+        tar_rays = self.create_rays(tar_cams)
 
-        # [B, V1, N1, DIM1]
+        # ref_imgs: [B, V1, N1, DIM1]
         ref_imgs = patchify(ref_imgs, config.patch_size)
-        # [B, V1, N2, DIM2]
+        # ref_rays: [B, V1, N2, DIM2]
         ref_rays = patchify(ref_rays, config.patch_size)
-        # [B, V2, N2, DIM2]
+        # tar_rays: [B, V2, N2, DIM2]
         tar_rays = patchify(tar_rays, config.patch_size)
 
+        # Tokenize into
+        # x: [B*V2, V1*N1, DIM1]
+        # q: [B*V2, N2, DIM2]
         x = self.input_tokenizer(torch.cat([ref_imgs, ref_rays], dim=-1))
         x = repeat(x, "b v1 n d -> (b v2) (v1 n) d", v2=v2)
         q = self.query_tokenizer(tar_rays)
-
         q = rearrange(q, "b v2 n d -> (b v2) n d")
         q_tokens = q.shape[1]
 
@@ -207,9 +209,9 @@ class LVSMDecoderOnlyModel(nn.Module):
                 raise ValueError(f"Invalid pos_enc: {config.pos_enc}")
 
         # run attentions
-        q = torch.cat([x, q], dim=1)
-        q = self.encoder(q, sdpa_fn=sdpa_fn)
-        q = q[:, -q_tokens:, :]
+        xq = torch.cat([x, q], dim=1)
+        xq = self.encoder(xq, sdpa_fn=sdpa_fn)
+        q = xq[:, -q_tokens:, :]
         q = rearrange(q, "(b v) n d -> b v n d", b=batch_size, v=v2)
 
         # output layer
@@ -252,4 +254,4 @@ if __name__ == "__main__":
     with torch.autocast("cuda"):
         for _ in tqdm.trange(100):
             y = model(ref_imgs, ref_cams, tar_cams)
-        print(y.shape)
+        assert y.shape == (batch_size, tar_views, height, width, 3)
