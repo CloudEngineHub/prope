@@ -1,4 +1,8 @@
 #! /bin/bash
+# 
+# Usage (2 GPUs)
+# ./scripts/nvs.sh -m plucker-prope -g 0,1
+# ./scripts/nvs.sh -m plucker-gta -g 0,1
 
 while getopts ":m:g:" opt; do
   case $opt in
@@ -41,6 +45,13 @@ case $MODE in
         --model_config.ray_encoding plucker \
         --model_config.pos_enc prope \
         --output_dir results/${NAME}-plucker-prope
+        ;;
+    qknorm-plucker-prope)
+        CUDA_VISIBLE_DEVICES=$GPUS eval ${BASE_CMD[@]} \
+        --model_config.encoder.layer.qk_norm \
+        --model_config.ray_encoding plucker \
+        --model_config.pos_enc prope \
+        --output_dir results/${NAME}-qknorm-plucker-prope
         ;;
     plucker-gta)
         CUDA_VISIBLE_DEVICES=$GPUS eval ${BASE_CMD[@]} \

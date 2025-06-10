@@ -46,6 +46,7 @@ class LVSMDecoderOnlyModelConfig:
                 elementwise_affine=True,
                 norm_type="layer_norm",
                 modulation_activation=None,
+                qk_norm=False,
             ),
             num_layers=6,
             input_norm=True,
