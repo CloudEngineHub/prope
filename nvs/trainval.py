@@ -299,11 +299,21 @@ class LVSMLauncher(Launcher):
             and self.world_rank == 0
             and acc_step == 0
         ):
-            self.writer.add_scalar("train/loss", loss, step)
+            mse = F.mse_loss(outputs, tar_imgs)
+            outputs = rearrange(outputs, "b v h w c-> (b v) c h w")
+            tar_imgs = rearrange(tar_imgs, "b v h w c-> (b v) c h w")
+            psnr = state["psnr_fn"](outputs, tar_imgs)
+            ssim = state["ssim_fn"](outputs, tar_imgs)
+            lpips = state["lpips_fn"](outputs, tar_imgs)
             self.logging_on_master(
-                f"Step: {step}, Loss: {loss:.3f} "
+                f"Step: {step}, Loss: {loss:.3f}, PSNR: {psnr:.3f}, "
+                f"SSIM: {ssim:.3f}, LPIPS: {lpips:.3f}, "
                 f"LR: {state['scheduler'].get_last_lr()[0]:.3e}"
             )
+            self.writer.add_scalar("train/loss", loss, step)
+            self.writer.add_scalar("train/psnr", psnr, step)
+            self.writer.add_scalar("train/ssim", ssim, step)
+            self.writer.add_scalar("train/lpips", lpips, step)
         return loss
 
     def test_initialize(
