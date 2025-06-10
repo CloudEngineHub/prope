@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="prope",
+    name="prope-nvs",
     version="0.0.0",
-    packages=find_packages(),
+    packages=find_packages(include=["prope*", "nvs*"]),
+    package_dir={"": "."},
     license="MIT",
 )
