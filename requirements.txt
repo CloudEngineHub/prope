@@ -1,0 +1,14 @@
+--find-links https://download.pytorch.org/whl/cu124
+torch==2.5.1
+
+pyyaml
+tyro
+einops
+tqdm
+tensorboard
+numpy<2.0.0
+
+# dev
+black
+isort
+pytest

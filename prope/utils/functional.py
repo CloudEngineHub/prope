@@ -1,5 +1,6 @@
+import time
 from collections import namedtuple
-from typing import Tuple
+from typing import Callable, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -172,3 +173,20 @@ def raymap_to_plucker(raymap: Tensor) -> Tensor:
     ray_directions = F.normalize(ray_directions, p=2, dim=-1)
     plucker_normal = torch.cross(ray_origins, ray_directions, dim=-1)
     return torch.cat([ray_directions, plucker_normal], dim=-1)
+
+
+def timeit(repeats: int, f: Callable, *args, **kwargs) -> float:
+    torch.cuda.reset_peak_memory_stats()
+    mem_tic = torch.cuda.max_memory_allocated() / 1024**3
+
+    for _ in range(5):  # warmup
+        f(*args, **kwargs)
+    torch.cuda.synchronize()
+    start = time.time()
+    for _ in range(repeats):
+        results = f(*args, **kwargs)
+    torch.cuda.synchronize()
+    end = time.time()
+
+    mem = torch.cuda.max_memory_allocated() / 1024**3 - mem_tic
+    return (end - start) / repeats, mem, results
