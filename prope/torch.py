@@ -182,17 +182,17 @@ def prope_dot_product_attention(
     # Block-diagonal transforms to the inputs and outputs of the attention operator.
     assert head_dim % 4 == 0
     transforms_q = [
-        (partial(_apply_tiled_projmat, projmat=P_T), head_dim // 2),
+        (partial(_apply_tiled_projmat, matrix=P_T), head_dim // 2),
         (partial(_rope_apply_coeffs, coeffs=coeffs_x), head_dim // 4),
         (partial(_rope_apply_coeffs, coeffs=coeffs_y), head_dim // 4),
     ]
     transforms_kv = [
-        (partial(_apply_tiled_projmat, projmat=P_inv), head_dim // 2),
+        (partial(_apply_tiled_projmat, matrix=P_inv), head_dim // 2),
         (partial(_rope_apply_coeffs, coeffs=coeffs_x), head_dim // 4),
         (partial(_rope_apply_coeffs, coeffs=coeffs_y), head_dim // 4),
     ]
     transforms_o = [
-        (partial(_apply_tiled_projmat, projmat=P), head_dim // 2),
+        (partial(_apply_tiled_projmat, matrix=P), head_dim // 2),
         (partial(_rope_apply_coeffs, coeffs=coeffs_x, inverse=True), head_dim // 4),
         (partial(_rope_apply_coeffs, coeffs=coeffs_y, inverse=True), head_dim // 4),
     ]
