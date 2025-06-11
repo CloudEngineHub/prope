@@ -209,19 +209,21 @@ def prope_dot_product_attention(
 
 def _apply_tiled_projmat(
     feats: torch.Tensor,  # (batch, num_heads, seqlen, feat_dim)
-    projmat: torch.Tensor,  # (batch, cameras, 4, 4)
+    matrix: torch.Tensor,  # (batch, cameras, D, D)
 ) -> torch.Tensor:
     """Apply projection matrix to features."""
     # - seqlen => (cameras, patches_x * patches_y)
     # - feat_dim => (feat_dim // 4, 4)
     (batch, num_heads, seqlen, feat_dim) = feats.shape
-    cameras = projmat.shape[1]
+    cameras = matrix.shape[1]
     assert seqlen > cameras and seqlen % cameras == 0
-    assert projmat.shape == (batch, cameras, 4, 4)
+    D = matrix.shape[-1]
+    assert matrix.shape == (batch, cameras, D, D)
+    assert feat_dim % D == 0
     return torch.einsum(
         "bcij,bncpkj->bncpki",
-        projmat,
-        feats.reshape((batch, num_heads, cameras, -1, feat_dim // 4, 4)),
+        matrix,
+        feats.reshape((batch, num_heads, cameras, -1, feat_dim // D, D)),
     ).reshape(feats.shape)
 
 
