@@ -256,7 +256,7 @@ class Launcher:
                     f"Error loading checkpoint {ckpt_path}: {e}. Try next candidate."
                 )
                 continue
-
+            
             self.load_state_dict_to_model(ckpt["model"], state["model"])
             if not self.config.only_model and not self.config.test_only:
                 self.load_state_dict_to_optimizer(ckpt["optimizer"], state["optimizer"])
@@ -282,7 +282,7 @@ class Launcher:
         state_dict_filtered = {}
         for k, v in state_dict.items():
             if k not in model.state_dict():
-                print(f"Warning: {k} not in model state_dict.")
+                print(f"Warning: {k} in ckpt but not in model state_dict.")
                 continue
             if model.state_dict()[k].shape != v.shape:
                 print(
@@ -292,7 +292,7 @@ class Launcher:
             state_dict_filtered[k] = v
         model.load_state_dict(state_dict_filtered, strict=False)
         self.print_on_master(
-            f"Loosly loaded ckpt ({self.config.resume}) to model: "
+            f"Loosly loaded ckpt to model: "
             f"{len(state_dict)} keys in ckpt, "
             f"{len(state_dict_filtered)} keys loaded, "
             f"{len(model.state_dict())} keys in model."
@@ -413,8 +413,8 @@ class Launcher:
 
     def test(self):
         assert (
-            self.config.resume is not None
-        ), "Resume checkpoint must be provided for testing."
+            self.config.resume is not None or self.config.auto_resume
+        ), "Resume checkpoint or auto_resume must be provided for testing."
         print("Distributed worker: %d / %d" % (self.world_rank + 1, self.world_size))
 
         if self.config.fixed_seed:

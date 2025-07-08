@@ -69,10 +69,20 @@ class PropeDotProductAttention(torch.nn.Module):
             freq_scale=freq_scale,
             feat_dim=head_dim // 4,
         )
-        self.register_buffer("coeffs_x_0", coeffs_x[0])
-        self.register_buffer("coeffs_x_1", coeffs_x[1])
-        self.register_buffer("coeffs_y_0", coeffs_y[0])
-        self.register_buffer("coeffs_y_1", coeffs_y[1])
+        # Do not save coeffs to checkpoint as `cameras` might change during testing.
+        self.register_buffer("coeffs_x_0", coeffs_x[0], persistent=False)
+        self.register_buffer("coeffs_x_1", coeffs_x[1], persistent=False)
+        self.register_buffer("coeffs_y_0", coeffs_y[0], persistent=False)
+        self.register_buffer("coeffs_y_1", coeffs_y[1], persistent=False)
+
+    # override load_state_dict to not load coeffs if they exist (for backward compatibility)
+    def load_state_dict(self, state_dict, strict=True):
+        # remove coeffs from state_dict
+        state_dict.pop("coeffs_x_0", None)
+        state_dict.pop("coeffs_x_1", None)
+        state_dict.pop("coeffs_y_0", None)
+        state_dict.pop("coeffs_y_1", None)
+        super().load_state_dict(state_dict, strict)
 
     def forward(self, q, k, v, viewmats, Ks, **kwargs):
         return prope_dot_product_attention(

@@ -1,26 +1,63 @@
 #! /bin/bash
 # 
-# Usage (2 GPUs)
-# ./scripts/nvs.sh -m plucker-prope -g 0,1
-# ./scripts/nvs.sh -m plucker-gta -g 0,1
+# Usage
+# 
+# 2 GPUs Training
+# bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1"
+# bash ./scripts/nvs.sh --encode plucker-gta --gpus "0,1"
+# 
+# 2 GPUs Testing (with zooming in)
+# bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-zoom-in "1 3 5"
+#
+# 2 GPUs Testing (with more context views)
+# bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-context-views "2 4 8 16"
 
-while getopts ":m:g:" opt; do
-  case $opt in
-    m) MODE="$OPTARG" # e.g, "raymap"
-    ;;
-    g) GPUS="$OPTARG" # e.g, "0,1"
-    ;;
-    \?) echo "Invalid option -$OPTARG" >&2
-    exit 1
-    ;;
-  esac
 
-  case $OPTARG in
-    -*) echo "Option $opt needs a valid argument"
-    exit 1
-    ;;
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --encode)
+      ENCODE="$2"   
+      shift 2
+      ;;
+    --gpus)
+      GPUS="$2"
+      shift 2
+      ;;
+    --test-zoom-in)
+      TEST_ZOOM_IN="$2"
+      shift 2
+      ;;
+    --test-context-views)
+      TEST_CONTEXT_VIEWS="$2"
+      shift 2
+      ;;
+    -h|--help)
+      echo "Usage: $0 --encode <encode> --gpus <gpu_list> [--test-zoom-in <zoom_factors>]"
+      echo "  --encode: plucker-none, plucker-prope, or plucker-gta"
+      echo "  --gpus: comma-separated GPU list (e.g., '0,1')"
+      echo "  --test-zoom-in: space-separated zoom factors for testing (e.g., '3 5')"
+      echo "  --test-context-views: space-separated context views for testing (e.g., '2 4 8 16')"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option $1"
+      echo "Use --help for usage information"
+      exit 1
+      ;;
   esac
 done
+
+# Check required arguments
+if [ -z "$ENCODE" ]; then
+  echo "Error: --encode is required"
+  exit 1
+fi
+
+if [ -z "$GPUS" ]; then
+  echo "Error: --gpus is required"
+  exit 1
+fi
 
 
 NGPUS=$(echo $GPUS | tr ',' '\n' | wc -l)
@@ -40,30 +77,60 @@ BASE_CMD=(
     "--max_steps 20000 --test_every 2000"
 )
 
-case $MODE in
+case $ENCODE in
     plucker-none)
-        CUDA_VISIBLE_DEVICES=$GPUS eval "${BASE_CMD[@]}" \
-            --model_config.ray_encoding plucker \
-            --model_config.pos_enc none \
-            --output_dir "results/${NAME}-plucker-none"
-        exit 0
+        CMD="${BASE_CMD[@]}"
+        CMD+=(
+            "--model_config.ray_encoding plucker"
+            "--model_config.pos_enc none"
+            "--output_dir results/${NAME}-plucker-none"
+        )
         ;;
     plucker-prope)
-        CUDA_VISIBLE_DEVICES=$GPUS eval "${BASE_CMD[@]}" \
-            --model_config.ray_encoding plucker \
-            --model_config.pos_enc prope \
-            --output_dir "results/${NAME}-plucker-prope"
-        exit 0
+        CMD="${BASE_CMD[@]}"
+        CMD+=(
+            "--model_config.ray_encoding plucker"
+            "--model_config.pos_enc prope"
+            "--output_dir results/${NAME}-plucker-prope"
+        )
         ;;
     plucker-gta)
-        CUDA_VISIBLE_DEVICES=$GPUS eval "${BASE_CMD[@]}" \
-            --model_config.ray_encoding plucker \
-            --model_config.pos_enc gta \
-            --output_dir "results/${NAME}-plucker-gta"
-        exit 0
+        CMD="${BASE_CMD[@]}"
+        CMD+=(
+            "--model_config.ray_encoding plucker"
+            "--model_config.pos_enc gta"
+            "--output_dir results/${NAME}-plucker-gta"
+        )
         ;;
     *)
-        echo "Invalid mode: $MODE"
+        echo "Invalid encode: $ENCODE"
         exit 1
         ;;
 esac
+
+if [ -n "$TEST_ZOOM_IN" ]; then
+    for zoom_factor in $TEST_ZOOM_IN; do
+        echo "Starting testing with zoom factor ${zoom_factor}..."
+        CMD+=(
+            "--test_only --auto_resume"
+            "--test_zoom_factor ${zoom_factor}"
+            "--test_subdir eval-zoom${zoom_factor}x"
+        )
+        CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"
+    done
+elif [ -n "$TEST_CONTEXT_VIEWS" ]; then
+    for context_views in $TEST_CONTEXT_VIEWS; do
+        echo "Starting testing with ${context_views} context views..."
+        CMD+=(
+            "--test_only --auto_resume --no_use_torch_compile"
+            "--model_config.ref_views ${context_views}"
+            "--test_input_views ${context_views}"
+            "--test_index_fp evaluation_index_re10k_context${context_views}.json"
+            "--test_subdir eval-context${context_views}"
+        )
+        CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"
+    done
+else
+    echo "Starting training process..."
+    CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"
+fi
