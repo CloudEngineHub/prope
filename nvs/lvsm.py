@@ -119,7 +119,7 @@ class LVSMDecoderOnlyModel(nn.Module):
             layer.apply(self.init_layer_weights(idx))
 
     def init_layer_weights(self, idx):
-        # Paper A.1:
+        # LVMS Paper A.1:
         # "We initialize the model weights with a normal distribution of zero-mean
         # and standard deviation of 0.02/(2 * (idx+ 1)) ** 0.5, where idx means
         # transform layer index."
@@ -210,8 +210,10 @@ class LVSMDecoderOnlyModel(nn.Module):
             if config.pos_enc == "prope":
                 return self.attention(q, k, v, viewmats=viewmats, Ks=Ks, **kwargs)
             elif config.pos_enc == "gta":
+                # GTA is effectively PRoPE without intrinsics.
                 return self.attention(q, k, v, viewmats=viewmats, Ks=None, **kwargs)
             elif config.pos_enc == "none":
+                # Use the default attention.
                 return F.scaled_dot_product_attention(q, k, v, **kwargs)
             else:
                 raise ValueError(f"Invalid pos_enc: {config.pos_enc}")
@@ -234,6 +236,7 @@ class LVSMDecoderOnlyModel(nn.Module):
 
 
 if __name__ == "__main__":
+    # Test the model.
     import tqdm
 
     device = "cuda:0"

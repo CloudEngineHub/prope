@@ -78,7 +78,6 @@ class LVSMLauncherConfig(LauncherConfig):
     )
 
     # Training config
-    method: Literal["feedforward", "flow"] = "feedforward"
     max_steps: int = 100_000  # override
     ckpt_every: int = 1000  # override
     print_every: int = 100
@@ -485,8 +484,8 @@ class LVSMLauncher(Launcher):
 if __name__ == "__main__":
     """Example usage:
 
-    # dry run
-    OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc-per-node=1 \
+    # 2GPUs dry run
+    OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc-per-node=2 \
         nvs/trainval.py lvsm-dry-run --model_config.encoder.num_layers 2
     """
 
