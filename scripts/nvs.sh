@@ -70,7 +70,7 @@ fi
 
 NGPUS=$(echo $GPUS | tr ',' '\n' | wc -l)
 
-NAME="lvsm-b8-s1-20k-qknorm"
+NAME="release-${NGPUS}gpus-b8-s1-80k"
 BASE_CMD=(
     "NCCL_P2P_DISABLE=1 OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc-per-node=$NGPUS"
     "nvs/trainval.py lvsm"
@@ -82,7 +82,7 @@ BASE_CMD=(
     "--model_config.encoder.layer.nhead 16"
     "--model_config.encoder.layer.dim_feedforward 1024"
     "--model_config.encoder.layer.qk_norm"
-    "--max_steps 20000 --test_every 2000"
+    "--max_steps 80000 --test_every 8000"
 )
 
 case $ENCODE in
