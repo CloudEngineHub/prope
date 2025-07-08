@@ -32,7 +32,7 @@ import jax.numpy as jnp
 
 class PropeDotProductAttention:
     """PRoPE attention with precomputed RoPE coefficients."""
-    
+
     def __init__(
         self,
         head_dim: int,
@@ -50,7 +50,7 @@ class PropeDotProductAttention:
         self.patches_y = patches_y
         self.image_width = image_width
         self.image_height = image_height
-        
+
         # Precompute coefficients for x and y
         self.coeffs_x = _rope_precompute_coeffs(
             jnp.tile(jnp.arange(patches_x), patches_y * cameras),
@@ -64,7 +64,7 @@ class PropeDotProductAttention:
             freq_scale=freq_scale,
             feat_dim=head_dim // 4,
         )
-    
+
     def __call__(
         self,
         q: jax.Array,  # (batch, seqlen, num_heads, head_dim)

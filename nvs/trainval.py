@@ -480,14 +480,17 @@ class LVSMLauncher(Launcher):
                 self.writer.add_scalar(f"test/ssim{label}", avg_ssim, step)
                 self.writer.add_scalar(f"test/lpips{label}", avg_lpips, step)
                 with open(f"{self.test_dir}/metrics.json", "w") as f:
-                    json.dump({
-                        "label": label,
-                        "step": step,
-                        "n_total": n_total,
-                        "psnr": avg_psnr,
-                        "ssim": avg_ssim,
-                        "lpips": avg_lpips
-                    }, f)
+                    json.dump(
+                        {
+                            "label": label,
+                            "step": step,
+                            "n_total": n_total,
+                            "psnr": avg_psnr,
+                            "ssim": avg_ssim,
+                            "lpips": avg_lpips,
+                        },
+                        f,
+                    )
 
 
 if __name__ == "__main__":

@@ -33,6 +33,7 @@ torch.set_default_dtype(torch.float64)
 from prope.jax import PropeDotProductAttention as PropeDotProductAttentionJax
 from prope.torch import PropeDotProductAttention as PropeDotProductAttentionTorch
 
+
 @pytest.mark.parametrize("no_intrinics", [True, False])
 def test_compare_jax_torch(no_intrinics: bool):
     torch.manual_seed(42)

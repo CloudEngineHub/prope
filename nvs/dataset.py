@@ -52,11 +52,14 @@ def _normalize_poses(
     in_c2ws[:, :3, 3] /= scene_scale
     return in_c2ws
 
+
 def _normalize_poses_identity_unit_distance(
-    in_c2ws: torch.Tensor, ref0_idx: int, ref1_idx: int,
+    in_c2ws: torch.Tensor,
+    ref0_idx: int,
+    ref1_idx: int,
 ):
     """
-    Normalize the poses such that the ref0 camera is the identity 
+    Normalize the poses such that the ref0 camera is the identity
     and the ref1 camera is unit distance to the ref0 camera.
     """
 
@@ -65,10 +68,11 @@ def _normalize_poses_identity_unit_distance(
 
     ref1_c2w = c2ws[ref1_idx]
     dist = torch.linalg.norm(ref1_c2w[:3, 3] - ref0_c2w[:3, 3])
-    if dist > 1e-2: # numerically stable
+    if dist > 1e-2:  # numerically stable
         c2ws[:, :3, 3] /= dist
-    
+
     return c2ws
+
 
 def resize_crop_with_subpixel_accuracy(
     image: np.ndarray, K: np.ndarray, patch_size: int

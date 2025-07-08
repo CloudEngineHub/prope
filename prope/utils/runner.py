@@ -256,7 +256,7 @@ class Launcher:
                     f"Error loading checkpoint {ckpt_path}: {e}. Try next candidate."
                 )
                 continue
-            
+
             self.load_state_dict_to_model(ckpt["model"], state["model"])
             if not self.config.only_model and not self.config.test_only:
                 self.load_state_dict_to_optimizer(ckpt["optimizer"], state["optimizer"])
