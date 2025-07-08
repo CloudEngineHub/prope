@@ -29,6 +29,7 @@ import torch.nn.functional as F
 
 
 class PropeDotProductAttention(torch.nn.Module):
+    """PRoPE attention with precomputed RoPE coefficients."""
 
     coeffs_x_0: torch.Tensor
     coeffs_x_1: torch.Tensor
@@ -84,7 +85,15 @@ class PropeDotProductAttention(torch.nn.Module):
         state_dict.pop("coeffs_y_1", None)
         super().load_state_dict(state_dict, strict)
 
-    def forward(self, q, k, v, viewmats, Ks, **kwargs):
+    def forward(
+        self,
+        q: torch.Tensor,  # (batch, num_heads, seqlen, head_dim)
+        k: torch.Tensor,  # (batch, num_heads, seqlen, head_dim)
+        v: torch.Tensor,  # (batch, num_heads, seqlen, head_dim)
+        viewmats: torch.Tensor,  # (batch, cameras, 4, 4)
+        Ks: Optional[torch.Tensor],  # (batch, cameras, 3, 3)
+        **kwargs,
+    ) -> torch.Tensor:
         return prope_dot_product_attention(
             q,
             k,
