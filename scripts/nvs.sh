@@ -11,6 +11,9 @@
 #
 # 2 GPUs Testing (with more context views)
 # bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-context-views "2 4 8 16"
+#
+# 2 GPUs Testing (with rendering video)
+# bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-render-video
 
 
 # Parse command line arguments
@@ -32,12 +35,17 @@ while [[ $# -gt 0 ]]; do
       TEST_CONTEXT_VIEWS="$2"
       shift 2
       ;;
+    --test-render-video)
+      TEST_RENDER_VIDEO=true
+      shift 1
+      ;;
     -h|--help)
       echo "Usage: $0 --encode <encode> --gpus <gpu_list> [--test-zoom-in <zoom_factors>]"
       echo "  --encode: plucker-none, plucker-prope, or plucker-gta"
       echo "  --gpus: comma-separated GPU list (e.g., '0,1')"
       echo "  --test-zoom-in: space-separated zoom factors for testing (e.g., '3 5')"
       echo "  --test-context-views: space-separated context views for testing (e.g., '2 4 8 16')"
+      echo "  --test-render-video: render video for testing"
       exit 0
       ;;
     *)
@@ -122,7 +130,7 @@ elif [ -n "$TEST_CONTEXT_VIEWS" ]; then
     for context_views in $TEST_CONTEXT_VIEWS; do
         echo "Starting testing with ${context_views} context views..."
         CMD+=(
-            "--test_only --auto_resume --no_use_torch_compile"
+            "--test_only --auto_resume"
             "--model_config.ref_views ${context_views}"
             "--test_input_views ${context_views}"
             "--test_index_fp evaluation_index_re10k_context${context_views}.json"
@@ -130,6 +138,12 @@ elif [ -n "$TEST_CONTEXT_VIEWS" ]; then
         )
         CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"
     done
+elif [ -n "$TEST_RENDER_VIDEO" ]; then
+    echo "Starting testing with rendering video for fisrt 10 scenes ..."
+    CMD+=(
+        "--test_only --auto_resume --render_video --test_n 10"
+    )
+    CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"
 else
     echo "Starting training process..."
     CUDA_VISIBLE_DEVICES=$GPUS eval "${CMD[@]}"

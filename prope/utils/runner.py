@@ -107,7 +107,7 @@ class Launcher:
         ]
         self.use_grad_scaler = self.config.amp and self.config.amp_dtype == "fp16"
 
-        if self.world_rank == 0:
+        if self.world_rank == 0 and not self.config.test_only:
             self.writer = SummaryWriter(log_dir=f"{self.config.output_dir}/tb")
             (Path(self.output_dir) / "config.yaml").write_text(yaml.dump(config))
             print(f"Wrote config to {self.output_dir}/config.yaml")
