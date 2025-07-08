@@ -52,6 +52,23 @@ def _normalize_poses(
     in_c2ws[:, :3, 3] /= scene_scale
     return in_c2ws
 
+def _normalize_poses_identity_unit_distance(
+    in_c2ws: torch.Tensor, ref0_idx: int, ref1_idx: int,
+):
+    """
+    Normalize the poses such that the ref0 camera is the identity 
+    and the ref1 camera is unit distance to the ref0 camera.
+    """
+
+    ref0_c2w = in_c2ws[ref0_idx]
+    c2ws = torch.einsum("ij,njk->nik", torch.linalg.inv(ref0_c2w), in_c2ws)
+
+    ref1_c2w = c2ws[ref1_idx]
+    dist = torch.linalg.norm(ref1_c2w[:3, 3] - ref0_c2w[:3, 3])
+    if dist > 1e-2: # numerically stable
+        c2ws[:, :3, 3] /= dist
+    
+    return c2ws
 
 def resize_crop_with_subpixel_accuracy(
     image: np.ndarray, K: np.ndarray, patch_size: int
@@ -351,7 +368,9 @@ class TrainDataset(Dataset):
 
         # Preprocess poses
         camtoworld = torch.from_numpy(loaded["camtoworld"]).float()
-        camtoworld = _normalize_poses(camtoworld)
+        camtoworld = _normalize_poses_identity_unit_distance(
+            camtoworld, ref0_idx=0, ref1_idx=self.input_views - 1
+        )
         K = torch.from_numpy(loaded["K"]).float()
         image = torch.from_numpy(loaded["image"]).float()
         image_path = loaded["image_path"]
