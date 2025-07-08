@@ -87,7 +87,7 @@ BASE_CMD=(
 
 case $ENCODE in
     plucker-none)
-        CMD="${BASE_CMD[@]}"
+        CMD=("${BASE_CMD[@]}")
         CMD+=(
             "--model_config.ray_encoding plucker"
             "--model_config.pos_enc none"
@@ -95,7 +95,7 @@ case $ENCODE in
         )
         ;;
     plucker-prope)
-        CMD="${BASE_CMD[@]}"
+        CMD=("${BASE_CMD[@]}")
         CMD+=(
             "--model_config.ray_encoding plucker"
             "--model_config.pos_enc prope"
@@ -103,7 +103,7 @@ case $ENCODE in
         )
         ;;
     plucker-gta)
-        CMD="${BASE_CMD[@]}"
+        CMD=("${BASE_CMD[@]}")
         CMD+=(
             "--model_config.ray_encoding plucker"
             "--model_config.pos_enc gta"
