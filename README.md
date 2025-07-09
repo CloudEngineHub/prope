@@ -1,36 +1,41 @@
 # PRoPE
+https://www.liruilong.cn/prope/
 
-This is the official repo for the paper
+This branch implements the Novel View Synthesis experiment (Improve LVSM on RealEstate10k Dataset) for the paper:
 
 "PRoPE: Projective Positional Encoding for Multiview Transformers"
 
-**TL;DR**: We introduce **PRoPE**, a projective positional encoding for multiview transformers that directly injects *relative camera geometry*—in the form of projective transformations—into the attention mechanism. Inspired by Rotary Positional Encoding (RoPE) in LLMs, PRoPE enhances cross-view reasoning with *no additional overhead*, remains *compatible with flash attention*, and *naturally reduces to RoPE in the single-view setting*. It delivers noticeable and consistent improvements across a diverse range tasks that requires cross-view understanding.
+## Setup
 
-## Implementations
-
-The implementation of PRoPE is extremely simple and efficient. We provide standalone, single-file implementations for both JAX and PyTorch in [`prope_jax.py`](prope_jax.py) and [`prope_torch.py`](prope_torch.py). 
-
-## Example of Usages
-
-Here we demo with PyTorch version:
-
-```python
-# Say we have C images, each carries with camera infomation, which would be used for cross-view understanding.
-viewmats: Tensor # (B, C, 4, 4) camera world-to-camera matrix
-Ks: Tensor # (B, C, 3, 3) camera intrinsic matrix
-
-# In transformer we typically patchify the images into tokens. Say
-# the image size is (256, 384) and patch size is 16.
-image_width, image_height = 256, 384
-patches_x, patches_y = image_width / 16, image_height / 16
-
-# And our attention layer has mapped the images from pixels (B, C, 384, 256) to Q/K/V tokens with shape (B, num_heads, seqlen, head_dim), where `seqlen = C * patches_x * patches_y`
-Q, K, V: Tensor = ... # (B, num_heads, seqlen, head_dim)
-
-# Injecting the camera information is simply replacing the native torch attention with our impl:
-output = torch.nn.functional.scaled_dot_product_attention(Q, K, V)
-# -->
-output = prope_dot_product_attention(
-    Q, K, V,viewmats=viewmats, Ks=Ks, patches_x=patches_x, patches_y=patches_y, image_width=image_width, image_height=image_height
-)
 ```
+conda create -n prope python=3.10
+conda activate prope
+# We use CUDA 12.4 for torch. Adjust if necessary
+pip install -r requirements.txt 
+# This will install two packages: prope, nvs
+pip install . 
+```
+
+To make sure your setup works, you could run `pytest tests/`.
+
+## Dataset
+
+Checkout [`scripts/data_preprocess.py`](scripts/data_preprocess.py) for converting the RealEstate10k data into our format.
+
+## Model Training and Testing
+
+```
+# 2 GPUs Training
+bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1"
+
+# 2 GPUs Testing (with {1, 3, 5}x zooming in)
+bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-zoom-in "1 3 5"
+
+# 2 GPUs Testing (with {2, 4, 8, 16} context/input views)
+bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-context-views "2 4 8 16"
+
+# 2 GPUs Testing (with video rendering using pre-defined trajectory)
+bash ./scripts/nvs.sh --encode plucker-prope --gpus "0,1" --test-render-video
+```
+
+
